@@ -8,7 +8,7 @@ import numpy as np
 "define the grid size, number of droplets, and number of agents. The grid will be a square matrix of gridSize (n x n). The number of droplets and agents can be set as per requirement."
 
 # defining global variables (editable)
-gridSize = 11 # grid size 
+gridSize = 13 # grid size 
 numDroplets = 1 # number of droplets 
 numAgents = 1 # number of agents (capped at 1)
 sigma = 0.5 # standard deviation for Gaussian noise in voltage signal from electrode actuations 
@@ -32,6 +32,7 @@ def grid_editor(gridSize):
 
     # Drawing mode
     mode = {'current': 'obstacle'}
+    drawing = {'active': False}
   
     obstacle_color = 'black'
     reservoir_color = 'blue'
@@ -45,7 +46,7 @@ def grid_editor(gridSize):
     ax.set_xticks(np.arange(0, gridSize, 1))
     ax.set_yticks(np.arange(0, gridSize, 1))
     ax.set_aspect('equal', adjustable='box')
-    ax.set_title(f"Click to add obstacles, reservoirs, and visit points.")
+    ax.set_title(f"Click and drag to add obstacles, reservoirs, and visit points.")
 
     ax.tick_params(axis='both', 
                    which='both', 
@@ -71,51 +72,56 @@ def grid_editor(gridSize):
         ax.add_patch(square)
         fig.canvas.draw_idle()
 
-    # Function to handle click events
-    def on_click(event):
+    # Function to add point based on current mode
+    def add_point(x, y):
+        if mode['current'] == 'obstacle':
+            if (x, y) not in obstacles:
+                obstacles.add((x, y))
+                update_plot(x, y, obstacle_color)
+
+        elif mode['current'] == 'reservoir':
+            if (x, y) not in reservoir_positions:
+                reservoir_positions.add((x, y))
+                update_plot(x, y, reservoir_color)
+
+        elif mode['current'] == 'visit':
+            if (x, y) not in visit_points:
+                visit_points.add((x, y))
+                update_plot(x, y, visit_point_color)
+
+    # Function to handle mouse button press
+    def on_press(event):
         if event.inaxes == ax:
+            drawing['active'] = True
             x, y = int(event.xdata), int(event.ydata)
+            add_point(x, y)
 
-            # Add point depending on current mode
-            if mode['current'] == 'obstacle':
-                if (x, y) in obstacles:
-                    obstacles.remove((x, y))
-                    update_plot(x, y, 'white')  
-                else:
-                    obstacles.add((x, y))
-                    update_plot(x, y, obstacle_color)
+    # Function to handle mouse button release
+    def on_release(event):
+        drawing['active'] = False
 
-            elif mode['current'] == 'reservoir':
-                if (x, y) in reservoir_positions:
-                    reservoir_positions.remove((x, y))
-                    update_plot(x, y, 'white')
-                else:
-                    reservoir_positions.add((x, y))
-                    update_plot(x, y, reservoir_color)
-
-            elif mode['current'] == 'visit':
-                if (x, y) in visit_points:
-                    visit_points.remove((x, y))
-                    update_plot(x, y, 'white')
-                else:
-                    visit_points.add((x, y))
-                    update_plot(x, y, visit_point_color)
+    # Function to handle mouse motion
+    def on_motion(event):
+        if drawing['active'] and event.inaxes == ax:
+            x, y = int(event.xdata), int(event.ydata)
+            add_point(x, y)
 
     def on_pick(event):
-        # Detect which legend element was clicked
         label = event.artist.get_label()
         if label == 'Obstacles':
             mode['current'] = 'obstacle'
-            ax.set_title("Mode: Obstacles")
+            ax.set_title("Mode: Obstacles (Click and drag)")
         elif label == 'Reservoirs':
             mode['current'] = 'reservoir'
-            ax.set_title("Mode: Reservoirs")
+            ax.set_title("Mode: Reservoirs (Click and drag)")
         elif label == 'Visit Points':
             mode['current'] = 'visit'
-            ax.set_title("Mode: Visit Points")
+            ax.set_title("Mode: Visit Points (Click and drag)")
         fig.canvas.draw()
 
-    fig.canvas.mpl_connect('button_press_event', on_click)
+    fig.canvas.mpl_connect('button_press_event', on_press)
+    fig.canvas.mpl_connect('button_release_event', on_release)
+    fig.canvas.mpl_connect('motion_notify_event', on_motion)
     fig.canvas.mpl_connect('pick_event', on_pick)
 
     plt.show()
