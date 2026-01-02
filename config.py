@@ -16,6 +16,7 @@ window_size = 600 # window size for rendering
 render_fps = 8 # render fps 
 k = 2 # adjustable depth of voltage_history, higher k means less compute time but less memory, lower k means more compute time but more memory
 N = gridSize//k # hyperparameter for tensor depth in voltage_history 
+threshold = 0.5 # belief state threshold for action masking: threshold*(1/num_states), states with belief below this value will be masked out
 
 "______________once the grid is set, do not change the size of the grid. Run the code to define obstacles, reservoirs, and visit points.________________"
 
@@ -162,6 +163,7 @@ def main():
         'electrode_positions': electrode_positions,
         'k': k,
         'N': N,
+        'threshold': threshold
     }
 
     current_folder = os.path.dirname(os.path.abspath(__file__))
