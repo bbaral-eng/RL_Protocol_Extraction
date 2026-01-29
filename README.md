@@ -81,14 +81,6 @@ jupyter notebook RecurrentPPO.ipynb
 - Action masking via logit manipulation
 - Models saved to `models/RecurrentPPO_*.pkl`
 
-### Training Recurrent PPO (Transformer-XL)
-```bash
-jupyter notebook RecurrentPPO_TrXL.ipynb
-```
-- Transformer-based memory (2 layers, 4 attention heads)
-- 32-timestep sliding window
-- Attention-based temporal reasoning
-
 ### Running Baselines
 ```bash
 jupyter notebook baselines.ipynb
@@ -222,44 +214,6 @@ tensorboard --logdir models/tensorboard
 - **Recommended**: NVIDIA GPU with 8GB+ VRAM
 - **Storage**: ~2GB for models and logs (excluding large data files)
 
-## Troubleshooting
-
-**ImportError for sb3_contrib**:
-```bash
-pip install sb3-contrib
-```
-
-**CUDA out of memory**:
-- Reduce `num_envs` in PPO (try 2 instead of 4)
-- Reduce `batch_size` in DRQN (try 16 instead of 32)
-
-**Action masking not visualizing**:
-- Ensure `use_action_masking=True` in visualization cell
-- Red X markers should appear on invalid grid cells
-
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@article{anonymous2024recurrent,
-  title={Recurrent Reinforcement Learning for Digital Microfluidic Protocol Extraction},
-  author={Anonymous Authors},
-  journal={Under Review},
-  year={2024}
-}
-```
-
-## License
-
-[Specify License - e.g., MIT, Apache 2.0]
-
-## Acknowledgments
-
-This work builds upon:
-- Deep Recurrent Q-Networks (Hausknecht & Stone, 2015)
-- Proximal Policy Optimization (Schulman et al., 2017)
-- Episodic Transformer Memory PPO (Pleines et al., 2023)
 
 ## License
 
