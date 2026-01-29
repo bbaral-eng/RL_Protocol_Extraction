@@ -23,40 +23,32 @@ def initialize_render(render_mode, window, window_size):
 
 def render_env(voltage_grid, agent_location, droplet_location, obstacles, window, clock, render_mode, gridSize, window_size, render_fps=8):
     "rendering actual environment w/ voltage grid, obstacles, droplets, and agents"
-
+   
     canvas = pygame.Surface((window_size, window_size))
-    canvas.fill((255, 255, 255))
+    canvas.fill((255, 255, 255))  
     pix_square_size = window_size / gridSize
+    obstacle_set = set(tuple(obstacle) for obstacle in obstacles)
+    colormap = cm.get_cmap('inferno')
 
-    # Draw voltage grid with better normalization
-    colormap = cm.inferno
-    voltage_max = max(1.0, np.max(voltage_grid))  # Ensure we don't divide by zero
-    
     for row in range(gridSize):
         for col in range(gridSize):
-            voltage_value = voltage_grid[row, col] / voltage_max  # Normalize to [0,1]
-            voltage_value = np.clip(voltage_value, 0, 1)  # Ensure bounds
-            color = tuple((np.array(colormap(voltage_value)[:3]) * 255).astype(int))
             rect = pygame.Rect(col * pix_square_size, row * pix_square_size,
-                              pix_square_size, pix_square_size)
-            pygame.draw.rect(canvas, color, rect)
-
-    # Draw voltage grid lines 
-    for x in range(gridSize + 1):
-        pygame.draw.line(canvas, (255, 255, 255), 
-                        (0, pix_square_size * x), 
-                        (window_size, pix_square_size * x), 1)
-        pygame.draw.line(canvas, (255, 255, 255), 
-                        (pix_square_size * x, 0), 
-                        (pix_square_size * x, window_size), 1)
-
-    # Draw obstacles
-    for obstacle in obstacles:
-        rect = pygame.Rect(
-            obstacle[1] * pix_square_size, obstacle[0] * pix_square_size,
-            pix_square_size, pix_square_size
-        )
-        pygame.draw.rect(canvas, (255, 250, 240), rect)
+                            pix_square_size, pix_square_size)
+            
+            if (row, col) in obstacle_set:
+                pygame.draw.rect(canvas, (255, 255, 255), rect)
+            else:
+                pygame.draw.rect(canvas, (0, 0, 0), rect)         
+                pygame.draw.rect(canvas, (255, 255, 255), rect, 1)
+            
+            voltage_value = np.clip(voltage_grid[row, col] / 1, 0, 1)
+            
+            if voltage_value > 0.1:
+                color_rgb = (np.array(colormap(voltage_value)[:3]) * 255).astype(int)
+                pygame.draw.rect(canvas, color_rgb, rect)
+                
+                if (row, col) not in obstacle_set:
+                    pygame.draw.rect(canvas, (255, 255, 255), rect, 1)
 
     # Draw droplets
     droplet_center = (droplet_location[::-1] + 0.5) * pix_square_size

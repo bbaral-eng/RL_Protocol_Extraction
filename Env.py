@@ -33,7 +33,7 @@ class VoltageDistributionEnv(Env):
         self.window_size = window_size
         self.N = N 
         self.electrode_positions = electrode_positions
-
+ 
         # Define the agent and target location; randomly chosen in `reset` and updated in `step`
         self._agent_location = np.array([0, 0], dtype=np.int32)
         self._droplet_location = np.array([0, 0], dtype=np.int32)
@@ -47,12 +47,12 @@ class VoltageDistributionEnv(Env):
             'time step': spaces.Box(low=0, high=1, shape=(1,), dtype=np.float32),
         })
 
-        # belief state map for action masking 
-        self.belief = BeliefStateMap(self.electrode_positions, sigma, threshold)
+        # belief state map for action masking - covers entire grid
+        self.belief = BeliefStateMap(self.size, sigma, threshold)
         self.action_mask = None
 
-         # agent only moves in the set of valid positions 
-        self.action_space = spaces.Discrete(len(electrode_positions))
+         # agent moves anywhere in the grid (entire grid, not just electrodes)
+        self.action_space = spaces.Discrete(self.size * self.size)
 
         self._droplet_path = np.empty(((size*2)-1, 2), dtype=np.int32) # holds empty set for droplet path 
         self.agent_location_history = []  # Tracks agent location history
@@ -69,8 +69,10 @@ class VoltageDistributionEnv(Env):
 
         "we also define the reward function here, which is used to train the agent"
         
-        # update agent's location based on action
-        self._agent_location = np.array(electrode_positions[action], dtype=np.int32)
+        # update agent's location based on action (action is index into full grid)
+        row = action // self.size
+        col = action % self.size
+        self._agent_location = np.array([row, col], dtype=np.int32)
         self.agent_location_history.append(self._agent_location)
 
        

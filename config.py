@@ -8,10 +8,10 @@ import numpy as np
 "define the grid size, number of droplets, and number of agents. The grid will be a square matrix of gridSize (n x n). The number of droplets and agents can be set as per requirement."
 
 # defining global variables (editable)
-gridSize = 13 # grid size 
+gridSize = 11 # grid size 
 numDroplets = 1 # number of droplets 
 numAgents = 1 # number of agents (capped at 1)
-sigma = 0.5 # standard deviation for Gaussian noise in voltage signal from electrode actuations 
+sigma = 1.5 # standard deviation for Gaussian noise in voltage signal from electrode actuations 
 window_size = 600 # window size for rendering 
 render_fps = 8 # render fps 
 k = 2 # adjustable depth of voltage_history, higher k means less compute time but less memory, lower k means more compute time but more memory

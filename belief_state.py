@@ -3,29 +3,35 @@ import numpy as np
 class BeliefStateMap:
 
     """
-    Bayesian belief tracker over electrodes
+    Bayesian belief tracker over entire grid
 
     The belief represents P(x_t | O_{1:t}), where x_t is the droplet location
     and O_t is the observations collected by the probe.
-
+ 
     """
 
-    def __init__(self, electrode_positions, sigma, threshold): 
+    def __init__(self, grid_size, sigma, threshold): 
 
         """
         Args:
-            electrode_positions: list of (row, col) tuples defining valid states
+            grid_size: size of the grid (grid is grid_size x grid_size)
             sigma: spatial decay parameter of the EMF field model
+            threshold: belief threshold for action masking
         """
 
-        self.electrode_positions = [tuple(pos) for pos in electrode_positions]
-        self.num_states = len(self.electrode_positions)
+        self.grid_size = grid_size
+        self.num_states = grid_size * grid_size
         self.sigma = sigma
         self.threshold = threshold 
 
-        # each electrode has a preallocated index, len(pos_to_idx) = action_dim 
+        # all grid positions as (row, col) tuples
+        self.grid_positions = [
+            (i, j) for i in range(grid_size) for j in range(grid_size)
+        ]
+
+        # each position has a preallocated index: idx = row * grid_size + col
         self.pos_to_idx = {
-            pos: i for i, pos in enumerate(self.electrode_positions)
+            pos: i for i, pos in enumerate(self.grid_positions)
         }
 
         # adjacency graph 
@@ -37,7 +43,7 @@ class BeliefStateMap:
     def _build_neighbor_map(self):
 
         """
-        Determining electrode neighbors by connecting each electrode to a neighboring N/E/S/W electrode.
+        Determining grid cell neighbors by connecting each cell to a neighboring N/E/S/W cell.
 
         Returns:
             dict[int, list[int]]: state index → neighbor state indices
@@ -45,15 +51,17 @@ class BeliefStateMap:
 
         neighbor_map = {}
 
-        # loop through every electrode 
-        for i, (r,c) in enumerate(self.electrode_positions):
+        # loop through every grid cell
+        for i, (r, c) in enumerate(self.grid_positions):
             neighbors = []
 
-            # legal moves in DMFBs
+            # legal moves: N/E/S/W
             for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                candidate = (r + dr, c + dc)
-                if candidate in self.pos_to_idx: # move is valid only if destination electrode exists
-                    neighbors.append(self.pos_to_idx[candidate])
+                nr, nc = r + dr, c + dc
+                # move is valid if within grid bounds
+                if 0 <= nr < self.grid_size and 0 <= nc < self.grid_size:
+                    neighbor_idx = nr * self.grid_size + nc
+                    neighbors.append(neighbor_idx)
 
             neighbor_map[i] = neighbors
 
@@ -110,7 +118,7 @@ class BeliefStateMap:
         probe_r, probe_c = probe_position
         likelihood = np.zeros(self.num_states)
 
-        for i, (r, c) in enumerate(self.electrode_positions):
+        for i, (r, c) in enumerate(self.grid_positions):
             dist_sq = (probe_r - r)**2 + (probe_c - c)**2
             predicted_emf = np.exp(-dist_sq / (2 * self.sigma**2))
 
