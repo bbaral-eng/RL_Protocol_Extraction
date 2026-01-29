@@ -12,7 +12,7 @@ import os
 rm = pyvisa.ResourceManager('@py')
 print(rm.list_resources())
 
-scope = rm.open_resource('TCPIP1::192.168.0.10::INSTR') # our scope is TCPIP at this IP address, change if necessary 
+scope = rm.open_resource()
 print(scope.query("*IDN?"))
 
 # Scope configuration
