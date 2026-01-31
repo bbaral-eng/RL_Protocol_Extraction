@@ -32,10 +32,6 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 - **Methods**: Random, Greedy, Entropy-Weighted, Standard DQN, Standard PPO
 - **File**: `baselines.ipynb`
 
-### 5. Time Series Classification
-- **Purpose**: Electrode identification from EMF signatures using dl-4-tsc ResNet
-- **File**: `droplet_classify.ipynb`
-
 ## Prerequisites
 
 - Python 3.12+
