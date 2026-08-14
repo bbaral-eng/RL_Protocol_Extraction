@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-
 "_____________________________________________________________rendering functions for enviroment_____________________________________________________________"
 
 "Rendering functions for the environment, including the voltage grid, obstacles, droplets, and agents. The rendering is done using Pygame for real-time visualization."

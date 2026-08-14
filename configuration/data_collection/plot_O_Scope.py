@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-filename = "/Users/biplovebaral/Desktop/research/Droplet_Tracker_Modularized/official_repo/O_Scope_Data/TopPlateDroplet/Region 1/tds7104_TopPlateDroplet_region1_1.csv" 
+filename = "tds7104_TopPlateDroplet_region1_1.csv" 
 
 metadata = {} 
 adc = []

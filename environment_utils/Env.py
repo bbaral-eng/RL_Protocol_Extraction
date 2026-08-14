@@ -6,7 +6,6 @@ import os
 import gymnasium.spaces as spaces
 from collections import deque
 
-
 # importing helper functions and other modules
 from helper_functions import voltage_grid, get_obs
 from protocol_creation import intelligent_walk
@@ -14,7 +13,6 @@ from rendering import initialize_render, render_env
 from belief_state import BeliefStateMap
 
 # importing variables from other files
-# path is relative to this file (not the caller's cwd) so Env.py works from any notebook location
 _grid_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'configuration', 'grid_configuration.json')
 with open(_grid_config_path, 'r') as f:
     grid_configuration = json.load(f)
