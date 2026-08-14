@@ -13,6 +13,7 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 ### 1. Recurrent Deep Q-Network (DRQN)
 - **Architecture**: LSTM-based recurrent memory (256 hidden units, 1 layer)
+- **Features**: Double DQN, Dueling Network, Prioritized Experience Replay
 - **Action Masking**: Belief-guided masking via Q-value manipulation
 - **File**: `RL_Protocol_Extraction_Agents/RecurrentDQN.ipynb`
 
@@ -36,8 +37,8 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 1. **Clone Repository**:
    ```bash
-   git clone https://github.com/RL_Protocol_Extraction.git
-   cd RL_Protocol_Extraction
+   git clone https://github.com/bbaral-eng/Recurrent_Rainbow_DQN.git
+   cd Recurrent_Rainbow_DQN
    ```
 
 2. **Create Virtual Environment** (recommended):
