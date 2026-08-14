@@ -4,8 +4,7 @@ import numpy as np
 
 "_____________________________________________________________ helper functions which are used in the main file _____________________________________________________________"
 
-"voltage_grid defines voltage across the entire grid as electrodes get actuated. get_obs records observations as the agent (probe) moves from electrode "
-"to electrode."
+"voltage_grid defines voltage across the entire grid as electrodes get actuated. get_obs records observations as the agent (probe) moves from electrode to electrode."
 
 def voltage_grid(droplet_location, sigma, obstacles, gridSize):  # creating the voltage grid 
 

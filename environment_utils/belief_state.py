@@ -88,7 +88,6 @@ class BeliefStateMap:
             neighbors = self.neighbor_map[i]
 
             if len(neighbors) == 0:
-                # deadspot, design error, ignore
                 continue
 
             p_per_neighbor = p / len(neighbors)

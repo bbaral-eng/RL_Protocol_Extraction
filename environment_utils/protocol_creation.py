@@ -31,7 +31,7 @@ def intelligent_walk(obstacles, visit_points, reservoir_positions, gridSize, max
     selected_visit_points = random.sample(list(visit_points), num_visit_points)
 
     try:
-        # Build path through all visit points: start -> vp1 -> vp2 -> vp3 -> vp4 -> end
+        # Build path through all visit points: start -> vp1 -> vp2 -> vp3 -> vp4 -> end 
         random_path = []
         current_pos = start_pos
         

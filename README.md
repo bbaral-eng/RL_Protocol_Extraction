@@ -13,28 +13,18 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 ### 1. Recurrent Deep Q-Network (DRQN)
 - **Architecture**: LSTM-based recurrent memory (256 hidden units, 1 layer)
-- **Features**: Double DQN, Dueling Network, Prioritized Experience Replay
 - **Action Masking**: Belief-guided masking via Q-value manipulation
-- **File**: `RecurrentDQN.ipynb`
+- **File**: `RL_Protocol_Extraction_Agents/RecurrentDQN.ipynb`
 
 ### 2. Recurrent Proximal Policy Optimization (PPO)
 - **Architecture**: LSTM-based recurrent memory (256 hidden units, 1 layer)
 - **Features**: On-policy learning with GAE, separate actor-critic heads
 - **Action Masking**: Belief-guided masking via logit manipulation
-- **File**: `RecurrentPPO.ipynb`
+- **File**: `RL_Protocol_Extraction_Agents/RecurrentPPO.ipynb`
 
-### 3. Recurrent PPO with Transformer-XL (Alternative)
-- **Architecture**: Gated Transformer-XL with multi-head attention (2 layers, 4 heads)
-- **Features**: Attention-based memory with 32-timestep sliding window
-- **File**: `RecurrentPPO_TrXL.ipynb`
-
-### 4. Baseline Algorithms
+### 3. Baseline Algorithms
 - **Methods**: Random, Greedy, Entropy-Weighted, Standard DQN, Standard PPO
-- **File**: `baselines.ipynb`
-
-### 5. Time Series Classification
-- **Purpose**: Electrode identification from EMF signatures using dl-4-tsc ResNet
-- **File**: `droplet_classify.ipynb`
+- **File**: `benchmarking/baselines.ipynb`
 
 ## Prerequisites
 
@@ -46,8 +36,8 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 1. **Clone Repository**:
    ```bash
-   git clone https://github.com/[REPOSITORY_URL].git
-   cd [REPOSITORY_NAME]
+   git clone https://github.com/RL_Protocol_Extraction.git
+   cd RL_Protocol_Extraction
    ```
 
 2. **Create Virtual Environment** (recommended):
@@ -65,36 +55,36 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 ### Training Recurrent DQN
 ```bash
-jupyter notebook RecurrentDQN.ipynb
+jupyter notebook RL_Protocol_Extraction_Agents/RecurrentDQN.ipynb
 ```
 - Configure hyperparameters in training cell
 - LSTM parameters: 256 hidden units, 1 layer
 - Action masking enabled by default
 - Models saved to `models/RecurrentDQN_*.pkl`
+- Also includes a real-world deployment interface (`RealWorldAgent`) for running the trained agent on live EMF readings instead of the simulator
 
 ### Training Recurrent PPO (LSTM)
 ```bash
-jupyter notebook RecurrentPPO.ipynb
+jupyter notebook RL_Protocol_Extraction_Agents/RecurrentPPO.ipynb
 ```
 - LSTM-based policy and value networks
 - On-policy learning with 4 parallel environments
 - Action masking via logit manipulation
 - Models saved to `models/RecurrentPPO_*.pkl`
 
-### Training Recurrent PPO (Transformer-XL)
-```bash
-jupyter notebook RecurrentPPO_TrXL.ipynb
-```
-- Transformer-based memory (2 layers, 4 attention heads)
-- 32-timestep sliding window
-- Attention-based temporal reasoning
-
 ### Running Baselines
 ```bash
-jupyter notebook baselines.ipynb
+jupyter notebook benchmarking/baselines.ipynb
 ```
 - Compare against Random, Greedy, Entropy-Weighted strategies
 - Standard (non-recurrent) DQN and PPO agents
+
+### Multi-Seed Training
+```bash
+jupyter notebook benchmarking/MultiSeed_Training.ipynb
+```
+- Trains each algorithm variant across 5 seeds for statistical comparison
+- Outputs CSVs to `PlotsInPaper/MultiSeed/` (kept locally, not pushed to GitHub)
 
 ### Visualization
 All notebooks include visualization cells that show:
@@ -123,7 +113,7 @@ All notebooks include visualization cells that show:
 - Shared feature extraction across actor/critic (PPO) or Q-network (DRQN)
 
 ### Environment Configuration
-- Customizable grid layouts via `grid_configuration.json`
+- Customizable grid layouts via `configuration/grid_configuration.json`
 - Adjustable EMF field parameters (sigma, noise)
 - Multiple protocol generation strategies
 - Obstacle support
@@ -131,34 +121,49 @@ All notebooks include visualization cells that show:
 ## File Structure
 
 ```
-├── RecurrentDQN.ipynb              # DRQN implementation (LSTM)
-├── RecurrentPPO.ipynb              # PPO implementation (LSTM)
-├── RecurrentPPO_TrXL.ipynb         # PPO implementation (Transformer-XL)
-├── baselines.ipynb                 # Baseline comparisons
-├── droplet_classify.ipynb          # Time series classification
-├── Env.py                          # DMFB POMDP environment
-├── belief_state.py                 # Bayesian state estimation
-├── protocol_creation.py            # Droplet path generation
-├── helper_functions.py             # Utility functions
-├── CustomFeatureExtractor.py       # CNN+MLP feature extractor
-├── rendering.py                    # Visualization utilities
-├── config.py                       # Environment parameters
-├── grid_configuration.json         # Grid layout specification
-├── requirements.txt                # Python dependencies
+├── RL_Protocol_Extraction_Agents/  # Agents that reverse-engineer protocols - the main deliverable
+│   ├── RecurrentDQN.ipynb          # DRQN implementation (LSTM) + real-world deployment interface
+│   └── RecurrentPPO.ipynb          # PPO implementation (LSTM)
+├── benchmarking/                   # Comparison points for the agents above
+│   ├── baselines.ipynb             # Random / Greedy / Entropy-weighted / SB3 DQN & PPO
+│   └── MultiSeed_Training.ipynb    # Multi-seed training runs for statistical comparison
+├── future_DMFB_research/
+│   └── closed_top_study.ipynb      # Closed-top DMFB feasibility study
+├── environment_utils/              # DMFB environment and supporting modules
+│   ├── Env.py                      # DMFB POMDP environment
+│   ├── belief_state.py             # Bayesian state estimation
+│   ├── protocol_creation.py        # Droplet path generation
+│   ├── helper_functions.py         # Utility functions
+│   ├── CustomFeatureExtractor.py   # CNN+MLP feature extractor
+│   └── rendering.py                # Visualization utilities
+├── configuration/
+│   ├── config.py                   # Environment parameters + interactive grid editor
+│   ├── grid_configuration.json     # Grid layout specification
+│   └── data_collection/
+│       ├── O_scope_data_collection.py  # Oscilloscope data capture
+│       └── plot_O_Scope.py             # Oscilloscope data plotting
+├── PlotsInPaper/                   # Figures and CSVs for the paper (local only, not pushed)
+├── defense/                        # Reserved for a future defense algorithm
 ├── models/                         # Saved models and TensorBoard logs
-└── O_Scope_Data/                   # EMF measurement data
+├── O_Scope_Data/                   # EMF measurement data
+├── actual_chip.jpeg                # DMFB chip photo used in figures
+├── requirements.txt                # Python dependencies
 ```
 
 ## Configuration
 
-### Environment Parameters (`config.py`)
+### Environment Parameters (`configuration/config.py`)
 ```python
-GRID_SIZE = 18              # Grid dimensions (18x18)
-SIGMA = 3.0                 # EMF field spread
-EMF_THRESHOLD = 0.01        # Measurement sensitivity
-PROBE_NOISE_STD = 0.05      # Gaussian noise std
-MAX_EPISODE_LENGTH = 100    # Episode termination
+gridSize = 11        # grid size (gridSize x gridSize)
+numDroplets = 1       # number of droplets
+numAgents = 1         # number of agents (capped at 1)
+sigma = 1.5           # EMF field spread
+window_size = 600     # rendering window size
+render_fps = 8        # render fps
+k = 2                 # voltage_history depth divisor
+threshold = 0.5       # belief threshold for action masking
 ```
+Run `configuration/config.py` directly to open the interactive grid editor and regenerate `configuration/grid_configuration.json`.
 
 ### Model Hyperparameters
 
@@ -222,44 +227,6 @@ tensorboard --logdir models/tensorboard
 - **Recommended**: NVIDIA GPU with 8GB+ VRAM
 - **Storage**: ~2GB for models and logs (excluding large data files)
 
-## Troubleshooting
-
-**ImportError for sb3_contrib**:
-```bash
-pip install sb3-contrib
-```
-
-**CUDA out of memory**:
-- Reduce `num_envs` in PPO (try 2 instead of 4)
-- Reduce `batch_size` in DRQN (try 16 instead of 32)
-
-**Action masking not visualizing**:
-- Ensure `use_action_masking=True` in visualization cell
-- Red X markers should appear on invalid grid cells
-
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@article{anonymous2024recurrent,
-  title={Recurrent Reinforcement Learning for Digital Microfluidic Protocol Extraction},
-  author={Anonymous Authors},
-  journal={Under Review},
-  year={2024}
-}
-```
-
-## License
-
-[Specify License - e.g., MIT, Apache 2.0]
-
-## Acknowledgments
-
-This work builds upon:
-- Deep Recurrent Q-Networks (Hausknecht & Stone, 2015)
-- Proximal Policy Optimization (Schulman et al., 2017)
-- Episodic Transformer Memory PPO (Pleines et al., 2023)
 
 ## License
 

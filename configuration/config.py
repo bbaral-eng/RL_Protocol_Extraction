@@ -5,23 +5,22 @@ import numpy as np
 
 "_____________________________________________________________Configurations for environment_____________________________________________________________"
 
-"define the grid size, number of droplets, and number of agents. The grid will be a square matrix of gridSize (n x n). The number of droplets and agents can be set as per requirement."
+"define the grid size, number of droplets, and number of agents (set to 1 and can only be one). The grid will be a square matrix of gridSize (n x n). The number of droplets and agents can be set as per requirement."
 
 # defining global variables (editable)
-gridSize = 11 # grid size 
-numDroplets = 1 # number of droplets 
-numAgents = 1 # number of agents (capped at 1)
-sigma = 1.5 # standard deviation for Gaussian noise in voltage signal from electrode actuations 
-window_size = 600 # window size for rendering 
-render_fps = 8 # render fps 
-k = 2 # adjustable depth of voltage_history, higher k means less compute time but less memory, lower k means more compute time but more memory
-N = gridSize//k # hyperparameter for tensor depth in voltage_history 
-threshold = 0.5 # belief state threshold for action masking: threshold*(1/num_states), states with belief below this value will be masked out
+gridSize = 11               # grid size 
+numDroplets = 1             # number of droplets 
+numAgents = 1               # number of agents (capped at 1)
+sigma = 1.5                 # standard deviation for Gaussian noise in voltage signal from electrode actuations 
+window_size = 600           # window size for rendering 
+render_fps = 8              # render fps 
+k = 2                       # adjustable depth of voltage_history, higher k means less compute time but less memory, lower k means more compute time but more memory
+N = gridSize//k             # hyperparameter for tensor depth in voltage_history 
+threshold = 0.5             # belief state threshold for action masking: threshold*(1/num_states), states with belief below this value will be masked out
 
 "______________once the grid is set, do not change the size of the grid. Run the code to define obstacles, reservoirs, and visit points.________________"
 
 "It is advised to draw reservoirs as singular locations in the general area where you want to place droplets."
-
 
 #______________________________________________ do not edit code, used for remaining grid constraints ____________________________________________#
 def grid_editor(gridSize): 

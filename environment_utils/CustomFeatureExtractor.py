@@ -15,7 +15,7 @@ import gymnasium
 class CustomCNN(BaseFeaturesExtractor):
     """
     Custom CNN inheriting from NatureCNN to reuse its structure (assertions, final linear layer, forward pass) but replacing the deep CNN layers 
-    with a shallow, configurable one for sparse data.
+    with a shallow, configurable one for sparse data. 
     """
     def __init__(
         self, 

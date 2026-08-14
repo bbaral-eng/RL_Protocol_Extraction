@@ -23,3 +23,6 @@ O_Scope_Data/TopPlateDroplet/
 models/*.pkl
 models/*.zip
 models/tensorboard/
+
+# Paper plots and figures (kept locally, not pushed)
+PlotsInPaper/
