@@ -37,8 +37,8 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 1. **Clone Repository**:
    ```bash
-   git clone https://github.com/bbaral-eng/Recurrent_Rainbow_DQN.git
-   cd Recurrent_Rainbow_DQN
+   git clone https://github.com/bbaral-eng/RL_Protocol_Extraction.git
+   cd RL_Protocol_Extraction
    ```
 
 2. **Create Virtual Environment** (recommended):
