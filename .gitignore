@@ -19,10 +19,10 @@ __pycache__/
 # Large data directories
 O_Scope_Data/TopPlateDroplet/
 
-# Model files (too large for git)
+# Model files 
 models/*.pkl
 models/*.zip
 models/tensorboard/
 
-# Paper plots and figures (kept locally, not pushed)
+# Paper plots and figures 
 PlotsInPaper/
