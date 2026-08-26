@@ -7,7 +7,7 @@ import defense.NSGA_II_utils.rules as rules
 class DefenseProblem(ElementwiseProblem):
     def __init__(self, protocol):
         self.protocol = protocol
-        lower, upper = genome.bounds(len(protocol))
+        lower, upper = genome.bounds(protocol)
         super().__init__(n_var=len(lower), n_obj=3, n_ieq_constr=0, xl=lower, xu=upper)
 
     def _evaluate(self, x, out, *args, **kwargs):
@@ -18,7 +18,7 @@ class DefenseProblem(ElementwiseProblem):
         attack_accuracy = rules.surrogate_attack_accuracy(schedule, self.protocol)
 
         # fitness score per objective, all already oriented for pymoo's minimize:
-        # count minimizes between [-1, 0] 
+        # count minimizes between [0, 1] 
         # spread minimizes between [0, 1]  
         # attack_accuracy minimizes between [0, 1]  
         out['F'] = [count, spread, attack_accuracy]

@@ -20,15 +20,21 @@ def electrode_start(t, electrode_index):
     return (t * config.MAX_DUMMIES_PER_STEP + electrode_index) * GENES_PER_SLOT
 
 
-def bounds(n_steps):
+def bounds(protocol):
     """
-    input: n_steps (len(protocol))
-    Lower and upper bound for every slot: active is [0,1], dr/dc are a (row, col) offset from wherever the droplet is that timestep.
+    Lower and upper bound for every slot: active is [0,1], while dr, dc are with respect to the grid size, and a droplet's location @ a timestep. 
     """
-    n_slots = n_steps * config.MAX_DUMMIES_PER_STEP
-    span = float(config.GRID_SIZE - 1)
-    lower = np.tile([0.0, -span, -span], n_slots)
-    upper = np.tile([1.0, span, span], n_slots)
+    lower_rows, upper_rows = [], []
+
+    for row, col in protocol:
+        dr_lo, dr_hi = -row, config.GRID_SIZE - 1 - row
+        dc_lo, dc_hi = -col, config.GRID_SIZE - 1 - col
+        for _ in range(config.MAX_DUMMIES_PER_STEP):
+            lower_rows.append([0.0, dr_lo, dc_lo])
+            upper_rows.append([1.0, dr_hi, dc_hi])
+
+    lower = np.array(lower_rows, dtype=float).ravel()
+    upper = np.array(upper_rows, dtype=float).ravel()
     return lower, upper
 
 

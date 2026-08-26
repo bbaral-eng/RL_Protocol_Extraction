@@ -9,23 +9,19 @@ import defense.NSGA_II_utils.field as field
 # rules.py defines the fitness functions that our algorithm optimizes for
 
 # defining all possible fitness scores based on count of dummy electrodes (in a timestep)
-_COUNT_FITNESS = {0: 0.0}
-for _ in range(1, config.MAX_DUMMIES_PER_STEP+1): 
-    if _ == 1:
-         _COUNT_FITNESS |= {1: 1.0}
-    else: 
-        _COUNT_FITNESS |= {_: 1/(math.sqrt(_))}
+# 1 - 1/sqrt(n): n=1 -> 0.0 (best), rises with n, n=0 -> 1.0 (worst) -- lower is better, same
+# [0,1] direction as spread/attack_accuracy, no separate sign flip needed.
+_COUNT_FITNESS = {0: 1.0}
+for _ in range(1, config.MAX_DUMMIES_PER_STEP+1):
+    _COUNT_FITNESS |= {_: 1 - 1/(math.sqrt(_))}
 
 
 def count_score(schedule):
     """
-    Take mean of _COUNT_FITNESS of electrodes actuated over every timestep: 
-    max: 1
-    min: 0
-    want max, not min, since NSGA-II tries to minimize, we take negative for fitness, meaning best score is -1 and worse is 0. 
+    Mean of _COUNT_FITNESS over every timestep: min 0 (best), max 1 (worst).
     """
     per_step = [_COUNT_FITNESS[len(dummies)] for dummies in schedule]
-    return -1*(float(np.mean(per_step)) if per_step else 0.0)
+    return float(np.mean(per_step)) if per_step else 1.0
 
 
 def _wasted_points(cells):

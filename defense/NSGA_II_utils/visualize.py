@@ -11,9 +11,10 @@ visualize.py just plots everything
 
 
 def plot_pareto_front(F, path=None, interactive=False):
-    """3D scatter of the front: count, spread, attack_accuracy. interactive=True opens a live, mouse-rotatable window
-    instead of saving a file."""
-    count, spread, attack_accuracy = -F[:, 0], F[:, 1], F[:, 2]
+    """
+    3D scatter of the front: count, spread, attack_accuracy. interactive=True opens a live, mouse-rotatable window instead of saving a file.
+    """
+    count, spread, attack_accuracy = F[:, 0], F[:, 1], F[:, 2]
 
     fig = plt.figure(figsize=(8, 7))
     ax = fig.add_subplot(111, projection='3d')
@@ -43,8 +44,50 @@ def plot_pareto_front(F, path=None, interactive=False):
     return fig
 
 
+def _frontier_line(x, y):
+    """2D non-dominated staircase of (x,y), both minimized, sorted for a clean line."""
+    order = np.argsort(x)
+    frontier_x, frontier_y, best_y = [], [], np.inf
+    for xi, yi in zip(x[order], y[order]):
+        if yi < best_y:
+            frontier_x.append(xi)
+            frontier_y.append(yi)
+            best_y = yi
+    return frontier_x, frontier_y
+
+
+def plot_pareto_slices(F, pop_size, n_gen):
+    """
+    3 side-by-side 2D projections of the 3-objective front (count-vs-spread, count-vs-attack, spread-vs-attack)
+    """
+    count, spread, attack = F[:, 0], F[:, 1], F[:, 2]
+    panels = [
+        (count, spread, 'count fitness', 'spread fitness'),
+        (count, attack, 'count fitness', 'attack accuracy'),
+        (spread, attack, 'spread fitness', 'attack accuracy'),
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    for ax, (x, y, xlabel, ylabel) in zip(axes, panels):
+        ax.scatter(x, y, c=attack, cmap='viridis_r', s=18, alpha=0.8, label='front points')
+        frontier_x, frontier_y = _frontier_line(x, y)
+        ax.plot(frontier_x, frontier_y, color='black', lw=1.5, marker='o', markersize=3, label='2D frontier')
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.grid(alpha=0.3)
+        ax.legend(fontsize=8)
+
+    fig.text(0.5, 1.08, 'Pareto Front of Genetically Evolved Defense',
+              ha='center', fontsize=16, fontweight='bold')
+    fig.text(0.5, 1.02, f'(Population Size: {pop_size}, Number of Generations: {n_gen})',
+              ha='center', fontsize=14)
+    fig.tight_layout()
+
+
 def plot_timesteps(protocol, schedule, path=None, ncols=8, interactive=False):
-    """One panel per timestep: droplet in blue, dummy actuations in green."""
+    """
+    One panel per timestep: droplet in blue, dummy actuations in green.
+    """
     fields = field.field_sequence(protocol, schedule)
     nrows = int(np.ceil(len(protocol) / ncols))
 

@@ -20,12 +20,13 @@ run_defense.py does the following:
     python3 run_defense.py --pick 12   # open the timestep-by-timestep plot for point 12
 """
 
-def search():
-    protocol = [
-        tuple(cell) for cell in
-        intelligent_walk(config.OBSTACLES, config.VISIT_POINTS,
-                         config.RESERVOIRS, config.GRID_SIZE)
-    ]
+def search(protocol=None):
+    if protocol is None:
+        protocol = [
+            tuple(cell) for cell in
+            intelligent_walk(config.OBSTACLES, config.VISIT_POINTS,
+                             config.RESERVOIRS, config.GRID_SIZE)
+        ]
     print(f"protocol: {len(protocol)} timesteps, {protocol[0]} to {protocol[-1]}")
     print(f"searching (pop {config.POP_SIZE}, {config.N_GEN} generations)...")
 
@@ -34,14 +35,15 @@ def search():
     elapsed = time.time() - t0
 
     evolve.save_run(RUN_PATH, protocol, X, F)
-    np.savetxt(TABLE_PATH, np.column_stack([np.arange(len(F)), -F[:, 0], F[:, 1], F[:, 2]]),
+    np.savetxt(TABLE_PATH, np.column_stack([np.arange(len(F)), F[:, 0], F[:, 1], F[:, 2]]),
               header='index,count,spread,attack_accuracy', delimiter=',', comments='', fmt='%.6f')
 
-    count, spread, attack_accuracy = -F[:, 0], F[:, 1], F[:, 2]
+    count, spread, attack_accuracy = F[:, 0], F[:, 1], F[:, 2]
     print(f"\nsearch took {elapsed:.1f}s")
     print(f"population {config.POP_SIZE} -> {len(F)} non-dominated (Pareto-optimal) out of it")
     print(f"saved {RUN_PATH}, {TABLE_PATH}")
-    print(f"\n{'':>16} {'min':>8} {'median':>8} {'max':>8}")
+    print(f"\nall 3 columns are [0,1], lower is better on every one")
+    print(f"{'':>16} {'min':>8} {'median':>8} {'max':>8}")
     print(f"{'count':>16} {count.min():>8.3f} {np.median(count):>8.3f} {count.max():>8.3f}")
     print(f"{'spread':>16} {spread.min():>8.3f} {np.median(spread):>8.3f} {spread.max():>8.3f}")
     print(f"{'attack_accuracy':>16} {attack_accuracy.min():>8.3f} {np.median(attack_accuracy):>8.3f} {attack_accuracy.max():>8.3f}")
@@ -76,18 +78,21 @@ def render(idx):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--pick', type=int, default=None,
-                        help='render the Pareto point at this index from the last search')
-    parser.add_argument('--front', action='store_true',
-                        help='reopen the interactive 3D plot from the last search, no re-run')
+    parser.add_argument('--pick', type=int, default=None, help='render the defense schedule of the Pareto point at this index from the last search')
+    parser.add_argument('--front', action='store_true', help='reopen the interactive 3D plot from the last search, no re-run')
+    parser.add_argument('--protocol', type=int, nargs='+', default=None, help='flattened row col pairs for a fixed protocol to search a defense for (default: autogenerate one)')
     args = parser.parse_args()
+
+    protocol = None
+    if args.protocol:
+        protocol = list(zip(args.protocol[0::2], args.protocol[1::2]))
 
     if args.front:
         front()
-    elif args.pick is None:
-        search()
-    else:
+    elif args.pick is not None:
         render(args.pick)
+    else:
+        search(protocol)
 
 if __name__ == '__main__':
     main()
