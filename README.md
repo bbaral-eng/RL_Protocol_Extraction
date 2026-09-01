@@ -13,19 +13,21 @@ Agents operate in a Partially Observable Markov Decision Process (POMDP) with:
 
 ### 1. Recurrent Deep Q-Network (DRQN)
 - **Architecture**: LSTM-based recurrent memory (256 hidden units, 1 layer)
-- **Features**: Double DQN, Dueling Network, Prioritized Experience Replay
 - **Action Masking**: Belief-guided masking via Q-value manipulation
 - **File**: `RL_Protocol_Extraction_Agents/RecurrentDQN.ipynb`
 
 ### 2. Recurrent Proximal Policy Optimization (PPO)
 - **Architecture**: LSTM-based recurrent memory (256 hidden units, 1 layer)
-- **Features**: On-policy learning with GAE, separate actor-critic heads
 - **Action Masking**: Belief-guided masking via logit manipulation
 - **File**: `RL_Protocol_Extraction_Agents/RecurrentPPO.ipynb`
 
 ### 3. Baseline Algorithms
 - **Methods**: Random, Greedy, Entropy-Weighted, Standard DQN, Standard PPO
 - **File**: `benchmarking/baselines.ipynb`
+
+### 4. Dummy Actuation Defense
+- **Approach**: NSGA-II search over dummy electrode schedules that confuse the agents above, evaluated against a trained DRQN agent
+- **File**: `defense/` — see [`defense/README.md`](defense/README.md) for details
 
 ## Prerequisites
 
@@ -143,8 +145,10 @@ All notebooks include visualization cells that show:
 │   └── data_collection/
 │       ├── O_scope_data_collection.py  # Oscilloscope data capture
 │       └── plot_O_Scope.py             # Oscilloscope data plotting
-├── PlotsInPaper/                   # Figures and CSVs for the paper (local only, not pushed)
-├── defense/                        # Reserved for a future defense algorithm
+├── defense/                        # NSGA-II search for dummy actuations that obscure protocol (see defense/README.md)
+│   ├── run_defense.py               # CLI: search / front / pick
+│   ├── defense.ipynb                # end-to-end search + evaluation against the trained agent
+│   └── NSGA_II_utils/                # genome, operators, fitness rules, seeding, EMF field model
 ├── models/                         # Saved models and TensorBoard logs
 ├── O_Scope_Data/                   # EMF measurement data
 ├── actual_chip.jpeg                # DMFB chip photo used in figures

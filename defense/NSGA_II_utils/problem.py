@@ -1,4 +1,5 @@
 from pymoo.core.problem import ElementwiseProblem
+import defense.NSGA_II_utils.config as config
 import defense.NSGA_II_utils.genome as genome
 import defense.NSGA_II_utils.rules as rules
 
@@ -14,7 +15,7 @@ class DefenseProblem(ElementwiseProblem):
 
         schedule = genome.decode(x, self.protocol)
         count = rules.count_score(schedule)
-        spread = rules.spread_score(schedule)
+        spread = rules.capture_zone_score(schedule) if config.USE_CAPTURE_ZONE_SPREAD else rules.spread_score(schedule)
         attack_accuracy = rules.surrogate_attack_accuracy(schedule, self.protocol)
 
         # fitness score per objective, all already oriented for pymoo's minimize:

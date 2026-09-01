@@ -8,7 +8,7 @@ import numpy as np
 "define the grid size, number of droplets, and number of agents (set to 1 and can only be one). The grid will be a square matrix of gridSize (n x n). The number of droplets and agents can be set as per requirement."
 
 # defining global variables (editable)
-gridSize = 11               # grid size 
+gridSize = 18               # grid size 
 numDroplets = 1             # number of droplets 
 numAgents = 1               # number of agents (capped at 1)
 sigma = 1.5                 # standard deviation for Gaussian noise in voltage signal from electrode actuations 

@@ -9,8 +9,7 @@ import defense.NSGA_II_utils.field as field
 # rules.py defines the fitness functions that our algorithm optimizes for
 
 # defining all possible fitness scores based on count of dummy electrodes (in a timestep)
-# 1 - 1/sqrt(n): n=1 -> 0.0 (best), rises with n, n=0 -> 1.0 (worst) -- lower is better, same
-# [0,1] direction as spread/attack_accuracy, no separate sign flip needed.
+# 1 - 1/sqrt(n): n=1 -> 0.0 (best), rises with n, n=0 -> 1.0 (worst) where lower is better. 
 _COUNT_FITNESS = {0: 1.0}
 for _ in range(1, config.MAX_DUMMIES_PER_STEP+1):
     _COUNT_FITNESS |= {_: 1 - 1/(math.sqrt(_))}
@@ -73,6 +72,34 @@ def spread_score(schedule):
             continue
         wasted = _wasted_points(dummies)
         per_step.append((max(0.0, min(1.0, wasted / len(config.ELECTRODES)))))
+
+    return float(np.mean(per_step)) if per_step else 0.0
+
+
+_ELECTRODE_SET = set(config.ELECTRODES)
+
+
+def capture_zone_score(schedule):
+    """
+    Alternative to prior spread_score. Per timestep: the union of the 3x3 blocks (4 orthogonal + 4 diagonal neighbours + the cell itself) around every dummy actuation,
+    intersected with electrode positions, divided by the electrode count. Average is taken over all timesteps. 
+    Example:
+        if dummy actuation has 9 surrounding electrodes, and only 25 electrodes exist, then 9/25 electrodes cannot be used, which means routing-area cost 
+        at that timestep is 9/25 or 0.36. Values scale with size of grid and max_dummies, if on 18x18 grid, then values much smaller. 
+    """
+    n_elec = len(config.ELECTRODES)
+    if n_elec == 0:
+        return 0.0
+
+    per_step = []
+    for dummies in schedule:
+        blocked = set()
+        for r, c in dummies:
+            for dr in (-1, 0, 1):
+                for dc in (-1, 0, 1):
+                    if (r + dr, c + dc) in _ELECTRODE_SET:
+                        blocked.add((r + dr, c + dc))
+        per_step.append(len(blocked) / n_elec)
 
     return float(np.mean(per_step)) if per_step else 0.0
 

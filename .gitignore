@@ -24,5 +24,10 @@ models/*.pkl
 models/*.zip
 models/tensorboard/
 
-# Paper plots and figures 
+# Paper plots and figures
 PlotsInPaper/
+
+# defense csv and npz
+defense/
+last_run.npz
+pareto_front.csv
