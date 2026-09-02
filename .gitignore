@@ -28,6 +28,5 @@ models/tensorboard/
 PlotsInPaper/
 
 # defense csv and npz
-defense/
-last_run.npz
-pareto_front.csv
+defense/*.csv
+defense/*.npz
